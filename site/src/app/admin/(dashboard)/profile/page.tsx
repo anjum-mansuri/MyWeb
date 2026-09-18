@@ -16,6 +16,7 @@ type ProfileForm = {
   linkedinUrl: string;
   scholarUrl: string;
   orcidUrl: string;
+  githubUrl: string;
 };
 
 const EMPTY: ProfileForm = {
@@ -30,6 +31,7 @@ const EMPTY: ProfileForm = {
   linkedinUrl: "",
   scholarUrl: "",
   orcidUrl: "",
+  githubUrl: "",
 };
 
 function Field({
@@ -170,10 +172,11 @@ export default function ProfileEditorPage() {
           <div className="mt-3">
             <Field label="Bio" value={form.bio} onChange={(v) => set("bio", v)} textarea />
           </div>
-          <div className="mt-4 grid gap-4 sm:grid-cols-3">
+          <div className="mt-4 grid gap-4 sm:grid-cols-4">
             <Field label="LinkedIn URL" value={form.linkedinUrl} onChange={(v) => set("linkedinUrl", v)} />
             <Field label="Google Scholar URL" value={form.scholarUrl} onChange={(v) => set("scholarUrl", v)} />
             <Field label="ORCID URL" value={form.orcidUrl} onChange={(v) => set("orcidUrl", v)} />
+            <Field label="GitHub URL" value={form.githubUrl} onChange={(v) => set("githubUrl", v)} />
           </div>
         </section>
 

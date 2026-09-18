@@ -15,6 +15,7 @@ const profileSchema = z.object({
   linkedinUrl: z.string().max(500).optional(),
   scholarUrl: z.string().max(500).optional(),
   orcidUrl: z.string().max(500).optional(),
+  githubUrl: z.string().max(500).optional(),
 });
 
 export async function GET() {

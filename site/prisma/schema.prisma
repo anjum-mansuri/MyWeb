@@ -43,6 +43,7 @@ model Profile {
   linkedinUrl String   @default("")
   scholarUrl  String   @default("")
   orcidUrl    String   @default("")
+  githubUrl   String   @default("")
   updatedAt   DateTime @updatedAt
 }
 
