@@ -60,6 +60,7 @@ export default async function HomePage() {
   if (profile.githubUrl) infoRows.push({ label: "GitHub", value: profile.githubUrl });
   if (profile.scholarUrl) infoRows.push({ label: "Scholar", value: profile.scholarUrl });
   if (profile.orcidUrl) infoRows.push({ label: "ORCID", value: profile.orcidUrl });
+  if (profile.researchGateUrl) infoRows.push({ label: "ResearchGate", value: profile.researchGateUrl });
 
   return (
     <div id="top">
@@ -121,7 +122,33 @@ export default async function HomePage() {
                 className="flex h-10 w-10 items-center justify-center rounded-full border border-cream/20 text-cream hover:border-gold hover:text-gold"
                 aria-label="Google Scholar"
               >
-                S
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 1 0 9l12 8 10-6.67V17h2V9L12 1Zm0 10.67L3.26 6 12 3.33 20.74 6 12 11.67ZM5 12.5V17c0 2.21 3.13 4 7 4s7-1.79 7-4v-4.5l-7 4.67-7-4.67Z" />
+                </svg>
+              </a>
+            )}
+            {profile.orcidUrl && (
+              <a
+                href={profile.orcidUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-cream/20 text-cream hover:border-gold hover:text-gold"
+                aria-label="ORCID"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0ZM7.37 4.68a1.32 1.32 0 1 1 0 2.63 1.32 1.32 0 0 1 0-2.63Zm-1.17 3.98h2.35v11.3H6.2V8.66Zm4.4 0h4.55c4.33 0 6.24 3.1 6.24 5.66 0 2.8-2.19 5.66-6.21 5.66h-4.58V8.66Zm2.35 2.03v7.23h2.03c3.03 0 4.17-2.24 4.17-3.62 0-1.96-1.25-3.61-4.24-3.61h-1.96Z" />
+                </svg>
+              </a>
+            )}
+            {profile.researchGateUrl && (
+              <a
+                href={profile.researchGateUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-cream/20 text-[11px] font-bold text-cream hover:border-gold hover:text-gold"
+                aria-label="ResearchGate"
+              >
+                RG
               </a>
             )}
             {profile.email && (

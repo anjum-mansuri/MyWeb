@@ -31,20 +31,21 @@ model Section {
 }
 
 model Profile {
-  id          Int      @id @default(1)
-  name        String   @default("")
-  title       String   @default("")
-  tagline     String   @default("")
-  photoBase64 String?  @db.Text
-  bio         String   @default("") @db.Text
-  email       String   @default("")
-  phone       String   @default("")
-  location    String   @default("")
-  linkedinUrl String   @default("")
-  scholarUrl  String   @default("")
-  orcidUrl    String   @default("")
-  githubUrl   String   @default("")
-  updatedAt   DateTime @updatedAt
+  id              Int      @id @default(1)
+  name            String   @default("")
+  title           String   @default("")
+  tagline         String   @default("")
+  photoBase64     String?  @db.Text
+  bio             String   @default("") @db.Text
+  email           String   @default("")
+  phone           String   @default("")
+  location        String   @default("")
+  linkedinUrl     String   @default("")
+  scholarUrl      String   @default("")
+  orcidUrl        String   @default("")
+  githubUrl       String   @default("")
+  researchGateUrl String   @default("")
+  updatedAt       DateTime @updatedAt
 }
 
 model SiteSettings {

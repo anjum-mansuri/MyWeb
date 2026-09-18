@@ -16,6 +16,7 @@ const profileSchema = z.object({
   scholarUrl: z.string().max(500).optional(),
   orcidUrl: z.string().max(500).optional(),
   githubUrl: z.string().max(500).optional(),
+  researchGateUrl: z.string().max(500).optional(),
 });
 
 export async function GET() {
