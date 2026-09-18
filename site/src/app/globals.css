@@ -1,13 +1,26 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #0f172a;
+  --background: #fbf6f0;
+  --foreground: #2b2230;
+
+  --color-plum: #3d2645;
+  --color-coral: #e4634c;
+  --color-coral-light: #f2a490;
+  --color-cream: #fbf6f0;
+  --color-ink: #2b2230;
+  --color-slate: #6b6270;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-plum: var(--color-plum);
+  --color-coral: var(--color-coral);
+  --color-coral-light: var(--color-coral-light);
+  --color-cream: var(--color-cream);
+  --color-ink: var(--color-ink);
+  --color-slate: var(--color-slate);
   --font-sans: var(--font-sans);
   --font-serif: var(--font-serif);
 }
@@ -16,4 +29,17 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+@keyframes wave-move {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-wave {
+  animation: wave-move 14s linear infinite;
 }

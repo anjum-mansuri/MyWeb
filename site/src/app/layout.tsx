@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Lora } from "next/font/google";
+import { Inter, Fraunces } from "next/font/google";
 import "./globals.css";
 
 const sans = Inter({
@@ -7,9 +7,10 @@ const sans = Inter({
   subsets: ["latin"],
 });
 
-const serif = Lora({
+const serif = Fraunces({
   variable: "--font-serif",
   subsets: ["latin"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${sans.variable} ${serif.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-white text-slate-900">{children}</body>
+      <body className="min-h-full flex flex-col bg-cream text-ink">{children}</body>
     </html>
   );
 }

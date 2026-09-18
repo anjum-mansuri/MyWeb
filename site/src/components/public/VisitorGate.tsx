@@ -2,10 +2,19 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import WaveformRibbon from "./WaveformRibbon";
 
-export default function VisitorGate({ siteName }: { siteName: string }) {
+export default function VisitorGate({
+  name,
+  title,
+  photoBase64,
+}: {
+  name: string;
+  title: string;
+  photoBase64: string | null;
+}) {
   const router = useRouter();
-  const [name, setName] = useState("");
+  const [formName, setFormName] = useState("");
   const [email, setEmail] = useState("");
   const [reason, setReason] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -19,7 +28,7 @@ export default function VisitorGate({ siteName }: { siteName: string }) {
       const res = await fetch("/api/inquiries", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, reason, source: "gate" }),
+        body: JSON.stringify({ name: formName, email, reason, source: "gate" }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -35,62 +44,66 @@ export default function VisitorGate({ siteName }: { siteName: string }) {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-8 shadow-sm"
-      >
-        <h1 className="font-serif text-2xl font-semibold text-slate-900">
-          {siteName || "Welcome"}
-        </h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Please introduce yourself before viewing this profile.
-        </p>
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-plum px-6 py-16 text-white">
+      <WaveformRibbon />
+      <div className="relative z-10 w-full max-w-md text-center">
+        {photoBase64 && (
+          <div
+            className="mx-auto mb-6 h-32 w-32 rounded-full p-1.5 shadow-2xl"
+            style={{ background: "linear-gradient(135deg, var(--color-coral), var(--color-coral-light))" }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={photoBase64}
+              alt={name}
+              className="h-full w-full rounded-full border-[3px] border-white/40 object-cover"
+            />
+          </div>
+        )}
+        <h1 className="font-serif text-3xl font-medium">{name || "Welcome"}</h1>
+        {title && <p className="mt-1.5 text-[15px] text-white/80">{title}</p>}
 
-        <label className="mt-5 block text-sm font-medium text-slate-700" htmlFor="gate-name">
-          Name
-        </label>
-        <input
-          id="gate-name"
-          required
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none"
-        />
-
-        <label className="mt-4 block text-sm font-medium text-slate-700" htmlFor="gate-email">
-          Email
-        </label>
-        <input
-          id="gate-email"
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none"
-        />
-
-        <label className="mt-4 block text-sm font-medium text-slate-700" htmlFor="gate-reason">
-          Reason for visiting (optional)
-        </label>
-        <textarea
-          id="gate-reason"
-          value={reason}
-          onChange={(e) => setReason(e.target.value)}
-          rows={3}
-          className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none"
-        />
-
-        {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="mt-6 w-full rounded-md bg-slate-900 px-4 py-2 font-medium text-white transition-colors hover:bg-slate-700 disabled:opacity-50"
+        <form
+          onSubmit={handleSubmit}
+          className="mt-7 rounded-2xl border border-white/15 bg-white/[0.06] p-6 text-left"
         >
-          {loading ? "Please wait..." : "Continue"}
-        </button>
-      </form>
+          <p className="mb-4 text-sm text-white/70">
+            Please share a few details to view the full profile.
+          </p>
+
+          <input
+            required
+            value={formName}
+            onChange={(e) => setFormName(e.target.value)}
+            placeholder="Your Name"
+            className="mb-2.5 w-full rounded-lg border-0 px-3.5 py-2.5 text-sm text-ink placeholder:text-slate focus:outline-none focus:ring-2 focus:ring-coral"
+          />
+          <input
+            required
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Your Email"
+            className="mb-2.5 w-full rounded-lg border-0 px-3.5 py-2.5 text-sm text-ink placeholder:text-slate focus:outline-none focus:ring-2 focus:ring-coral"
+          />
+          <input
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            placeholder="Reason for visiting (optional)"
+            className="mb-3.5 w-full rounded-lg border-0 px-3.5 py-2.5 text-sm text-ink placeholder:text-slate focus:outline-none focus:ring-2 focus:ring-coral"
+          />
+
+          {error && <p className="mb-3 text-sm text-red-300">{error}</p>}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-lg bg-coral py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+          >
+            {loading ? "Please wait…" : "View Profile"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
