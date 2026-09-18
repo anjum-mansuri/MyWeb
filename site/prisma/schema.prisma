@@ -1,0 +1,182 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SectionKey {
+  hero
+  about
+  education
+  experience
+  research
+  publications
+  patents
+  awards
+  skills
+  teaching
+  courses
+  languages
+  references
+  contact
+}
+
+model Section {
+  key       SectionKey @id
+  isPublic  Boolean    @default(true)
+  updatedAt DateTime   @updatedAt
+}
+
+model Profile {
+  id          Int      @id @default(1)
+  name        String   @default("")
+  title       String   @default("")
+  tagline     String   @default("")
+  photoBase64 String?  @db.Text
+  bio         String   @default("") @db.Text
+  email       String   @default("")
+  phone       String   @default("")
+  location    String   @default("")
+  linkedinUrl String   @default("")
+  scholarUrl  String   @default("")
+  orcidUrl    String   @default("")
+  updatedAt   DateTime @updatedAt
+}
+
+model SiteSettings {
+  id                 Int     @id @default(1)
+  visitorGateEnabled Boolean @default(false)
+}
+
+model Education {
+  id          String   @id @default(cuid())
+  degree      String
+  institution String   @default("")
+  dateRange   String   @default("")
+  result      String   @default("")
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Experience {
+  id           String   @id @default(cuid())
+  role         String
+  organization String   @default("")
+  dateRange    String   @default("")
+  description  String   @default("") @db.Text
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model ResearchHighlight {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @default("") @db.Text
+  dateRange   String   @default("")
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Publication {
+  id        String   @id @default(cuid())
+  title     String
+  authors   String   @default("")
+  venue     String   @default("")
+  year      String   @default("")
+  doiOrLink String   @default("")
+  citation  String   @default("") @db.Text
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Patent {
+  id          String   @id @default(cuid())
+  title       String
+  number      String   @default("")
+  status      String   @default("")
+  date        String   @default("")
+  description String   @default("") @db.Text
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Award {
+  id          String   @id @default(cuid())
+  title       String
+  issuer      String   @default("")
+  year        String   @default("")
+  description String   @default("") @db.Text
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Skill {
+  id        String   @id @default(cuid())
+  name      String
+  category  String   @default("")
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TeachingService {
+  id          String   @id @default(cuid())
+  title       String
+  role        String   @default("")
+  institution String   @default("")
+  dateRange   String   @default("")
+  description String   @default("") @db.Text
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Course {
+  id        String   @id @default(cuid())
+  title     String
+  provider  String   @default("")
+  year      String   @default("")
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Language {
+  id          String   @id @default(cuid())
+  name        String
+  proficiency String   @default("")
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Reference {
+  id          String   @id @default(cuid())
+  name        String
+  title       String   @default("")
+  institution String   @default("")
+  email       String   @default("")
+  phone       String   @default("")
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Inquiry {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  reason    String?  @db.Text
+  message   String?  @db.Text
+  source    String
+  createdAt DateTime @default(now())
+}
