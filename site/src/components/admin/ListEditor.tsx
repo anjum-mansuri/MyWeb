@@ -33,7 +33,7 @@ function ItemForm({
             />
           ) : (
             <input
-              type="text"
+              type={f.type === "number" ? "number" : "text"}
               value={values[f.key] ?? ""}
               onChange={(e) => onChange(f.key, e.target.value)}
               placeholder={f.placeholder}

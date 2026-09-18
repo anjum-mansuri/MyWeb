@@ -1,19 +1,21 @@
 export default function SectionShell({
   id,
   title,
-  tone = "cream",
+  tone = "ink",
   children,
 }: {
   id: string;
   title?: string;
-  tone?: "cream" | "white";
+  tone?: "ink" | "surface";
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} className={`scroll-mt-16 ${tone === "white" ? "bg-white" : "bg-cream"}`}>
-      <div className="mx-auto max-w-4xl px-6 py-14">
+    <section id={id} className={`scroll-mt-16 ${tone === "surface" ? "bg-surface" : "bg-ink"}`}>
+      <div className="mx-auto max-w-4xl px-6 py-16">
         {title && (
-          <h2 className="mb-5 font-serif text-2xl font-normal text-plum sm:text-[26px]">{title}</h2>
+          <h2 className="mb-6 font-display text-2xl font-bold tracking-tight text-cream sm:text-[28px]">
+            {title}
+          </h2>
         )}
         {children}
       </div>
@@ -23,14 +25,14 @@ export default function SectionShell({
 
 export function CardBlock({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl bg-white p-6 shadow-[0_2px_10px_rgba(61,38,69,0.06)]">
-      <h3 className="mb-3.5 font-serif text-xl font-normal text-plum">{title}</h3>
+    <div className="rounded-2xl border border-cream/10 bg-surface p-6">
+      <h3 className="mb-4 font-display text-xl font-bold text-cream">{title}</h3>
       {children}
     </div>
   );
 }
 
-/** A single card floating on the cream page background, no full-width section tint. */
+/** A single card floating on the page background, no full-width section tint. */
 export function CardSection({
   id,
   title,

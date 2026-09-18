@@ -1,28 +1,30 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fbf6f0;
-  --foreground: #2b2230;
+  --background: #0a0a0b;
+  --foreground: #f5f3ee;
 
-  --color-plum: #3d2645;
-  --color-coral: #e4634c;
-  --color-coral-light: #f2a490;
-  --color-cream: #fbf6f0;
-  --color-ink: #2b2230;
-  --color-slate: #6b6270;
+  --color-ink: #0a0a0b;
+  --color-surface: #141416;
+  --color-surface-2: #1b1b1e;
+  --color-gold: #d9a94f;
+  --color-gold-light: #f2cd82;
+  --color-cream: #f5f3ee;
+  --color-slate: #9a978f;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-plum: var(--color-plum);
-  --color-coral: var(--color-coral);
-  --color-coral-light: var(--color-coral-light);
-  --color-cream: var(--color-cream);
   --color-ink: var(--color-ink);
+  --color-surface: var(--color-surface);
+  --color-surface-2: var(--color-surface-2);
+  --color-gold: var(--color-gold);
+  --color-gold-light: var(--color-gold-light);
+  --color-cream: var(--color-cream);
   --color-slate: var(--color-slate);
   --font-sans: var(--font-sans);
-  --font-serif: var(--font-serif);
+  --font-display: var(--font-display);
 }
 
 body {
@@ -41,5 +43,19 @@ body {
 }
 
 .animate-wave {
-  animation: wave-move 14s linear infinite;
+  animation: wave-move 16s linear infinite;
+}
+
+@keyframes glow-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+.animate-glow {
+  animation: glow-pulse 6s ease-in-out infinite;
 }

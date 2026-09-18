@@ -5,7 +5,7 @@ import type { SectionKey } from "@prisma/client";
 export type FieldDef = {
   key: string;
   label: string;
-  type: "text" | "textarea";
+  type: "text" | "textarea" | "number";
   placeholder?: string;
 };
 
@@ -151,10 +151,12 @@ export const ITEM_TYPES = {
     fields: [
       { key: "name", label: "Skill", type: "text" },
       { key: "category", label: "Category", type: "text", placeholder: "optional" },
+      { key: "level", label: "Proficiency (0-100)", type: "number", placeholder: "75" },
     ],
     schema: z.object({
       name: z.string().min(1, "Skill name is required").max(100),
       category: optionalStr,
+      level: z.coerce.number().int().min(0).max(100).optional().default(75),
     }),
   },
   teaching: {

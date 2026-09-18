@@ -7,6 +7,7 @@ import SectionShell, { CardSection } from "@/components/public/SectionShell";
 import VisitorGate from "@/components/public/VisitorGate";
 import ContactForm from "@/components/public/ContactForm";
 import WaveformRibbon from "@/components/public/WaveformRibbon";
+import GlowBackdrop from "@/components/public/GlowBackdrop";
 
 export const dynamic = "force-dynamic";
 
@@ -20,8 +21,6 @@ export default async function HomePage() {
   }
 
   const { profile } = data;
-  const hasContactInfo = profile.email || profile.phone || profile.location;
-  const hasSocialLinks = profile.linkedinUrl || profile.scholarUrl || profile.orcidUrl;
 
   const sectionHasContent: Record<string, boolean> = {
     about: data.isAboutPublic && Boolean(profile.bio),
@@ -53,113 +52,129 @@ export default async function HomePage() {
 
   const whatsappNumber = profile.phone ? profile.phone.replace(/[^0-9]/g, "") : null;
 
+  const infoRows: { label: string; value: string }[] = [];
+  if (sectionHasContent.contact && profile.location) infoRows.push({ label: "Location", value: profile.location });
+  if (sectionHasContent.contact && profile.email) infoRows.push({ label: "Email", value: profile.email });
+  if (sectionHasContent.contact && profile.phone) infoRows.push({ label: "Phone", value: profile.phone });
+  if (profile.linkedinUrl) infoRows.push({ label: "LinkedIn", value: profile.linkedinUrl });
+  if (profile.scholarUrl) infoRows.push({ label: "Scholar", value: profile.scholarUrl });
+  if (profile.orcidUrl) infoRows.push({ label: "ORCID", value: profile.orcidUrl });
+
   return (
     <div id="top">
       <Nav items={navItems} siteName={profile.name} />
 
       {/* HERO */}
-      <section className="relative flex min-h-[88vh] items-center overflow-hidden bg-plum px-6 py-16 text-white">
-        <div className="pointer-events-none absolute -top-20 -right-20 h-80 w-80 rounded-full bg-coral/15" />
-        <WaveformRibbon />
-        <div className="relative mx-auto flex w-full max-w-4xl flex-wrap items-center gap-12">
-          <div className="min-w-[320px] flex-1">
-            {profile.title && (
-              <div className="mb-2 text-sm font-bold text-coral">Hello, I am</div>
-            )}
-            <h1 className="font-serif text-4xl leading-tight font-normal sm:text-5xl">
-              {profile.name || "Your Name"}
-            </h1>
-            {profile.title && <div className="mt-1.5 mb-5 text-lg text-white/80">{profile.title}</div>}
-            {profile.tagline && <p className="mb-5 max-w-md text-white/70">{profile.tagline}</p>}
-            <div className="flex flex-wrap items-center gap-3">
-              {sectionHasContent.contact && (
-                <a
-                  href="#contact"
-                  className="rounded-full bg-coral px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-                >
-                  Get in Touch
-                </a>
-              )}
-              {profile.linkedinUrl && (
-                <a
-                  href={profile.linkedinUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25"
-                  aria-label="LinkedIn"
-                >
-                  in
-                </a>
-              )}
-              {profile.email && (
-                <a
-                  href={`mailto:${profile.email}`}
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25"
-                  aria-label="Email"
-                >
-                  @
-                </a>
-              )}
-            </div>
-          </div>
-          {profile.photoBase64 && (
-            <div
-              className="mx-auto h-52 w-52 shrink-0 rounded-full p-1.5 shadow-2xl"
-              style={{ background: "linear-gradient(135deg, var(--color-coral), var(--color-coral-light))" }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={profile.photoBase64}
-                alt={profile.name}
-                className="h-full w-full rounded-full border-[3px] border-white/40 object-cover"
-              />
-            </div>
+      <section className="relative flex min-h-[90vh] items-center overflow-hidden bg-ink px-6 py-20 text-cream">
+        <GlowBackdrop />
+        <WaveformRibbon tall />
+        <div className="relative mx-auto w-full max-w-4xl text-center">
+          <div className="mb-4 text-xs font-bold tracking-[0.3em] text-gold uppercase">Welcome</div>
+          <h1 className="font-display text-5xl leading-[1.05] font-bold tracking-tight sm:text-7xl">
+            I Am {profile.name || "Your Name"}
+          </h1>
+          {profile.title && (
+            <div className="mt-5 text-lg text-cream/70 sm:text-xl">{profile.title}</div>
           )}
+          {profile.tagline && (
+            <p className="mx-auto mt-4 max-w-lg text-cream/60">{profile.tagline}</p>
+          )}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            {sectionHasContent.contact && (
+              <a
+                href="#contact"
+                className="rounded-full bg-gold px-6 py-2.5 text-sm font-semibold text-ink transition-opacity hover:opacity-90"
+              >
+                Get in Touch
+              </a>
+            )}
+            {profile.linkedinUrl && (
+              <a
+                href={profile.linkedinUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-cream/20 text-cream hover:border-gold hover:text-gold"
+                aria-label="LinkedIn"
+              >
+                in
+              </a>
+            )}
+            {profile.scholarUrl && (
+              <a
+                href={profile.scholarUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-cream/20 text-cream hover:border-gold hover:text-gold"
+                aria-label="Google Scholar"
+              >
+                S
+              </a>
+            )}
+            {profile.email && (
+              <a
+                href={`mailto:${profile.email}`}
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-cream/20 text-cream hover:border-gold hover:text-gold"
+                aria-label="Email"
+              >
+                @
+              </a>
+            )}
+          </div>
         </div>
       </section>
 
-      {/* ABOUT + QUICK INFO */}
+      {/* ABOUT + PHOTO */}
       {sectionHasContent.about && (
-        <SectionShell id="about" tone="cream">
-          <div className="flex flex-wrap gap-10">
-            <div className="min-w-[300px] flex-[2]">
-              <h2 className="mb-3.5 font-serif text-2xl font-normal text-plum">About Me</h2>
-              <p className="leading-relaxed whitespace-pre-line text-[15px] text-ink/90">{profile.bio}</p>
+        <SectionShell id="about" tone="ink">
+          <div className="flex flex-wrap gap-12">
+            <div className="min-w-[280px] flex-1">
+              {profile.photoBase64 && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={profile.photoBase64}
+                  alt={profile.name}
+                  className="aspect-[4/5] w-full max-w-sm rounded-2xl border border-gold/20 object-cover shadow-[0_0_60px_-15px_rgba(217,169,79,0.35)]"
+                />
+              )}
             </div>
-            {(hasSocialLinks || (sectionHasContent.contact && hasContactInfo)) && (
-              <div className="min-w-[240px] flex-1 self-start rounded-2xl bg-white p-6 shadow-[0_4px_16px_rgba(61,38,69,0.08)]">
-                <h4 className="mb-3 font-serif text-base font-normal text-plum">Quick Info</h4>
-                <div className="space-y-2 text-[13.5px] leading-relaxed text-ink">
-                  {sectionHasContent.contact && profile.location && (
-                    <div><strong>Location</strong> — {profile.location}</div>
-                  )}
-                  {sectionHasContent.contact && profile.email && (
-                    <div><strong>Email</strong> — {profile.email}</div>
-                  )}
-                  {sectionHasContent.contact && profile.phone && (
-                    <div><strong>Phone</strong> — {profile.phone}</div>
-                  )}
-                  {profile.linkedinUrl && <div><strong>LinkedIn</strong> — {profile.linkedinUrl}</div>}
-                  {profile.scholarUrl && <div><strong>Scholar</strong> — {profile.scholarUrl}</div>}
-                  {profile.orcidUrl && <div><strong>ORCID</strong> — {profile.orcidUrl}</div>}
+            <div className="min-w-[300px] flex-[2]">
+              <h2 className="mb-4 font-display text-2xl font-bold text-cream">About Me</h2>
+              <p className="leading-relaxed whitespace-pre-line text-cream/75">{profile.bio}</p>
+
+              {infoRows.length > 0 && (
+                <div className="mt-8 divide-y divide-cream/10 border-t border-cream/10">
+                  {infoRows.map((row) => (
+                    <div key={row.label} className="flex flex-wrap gap-x-4 gap-y-1 py-2.5 text-sm">
+                      <span className="w-28 shrink-0 font-bold tracking-wide text-cream/50 uppercase">
+                        {row.label}
+                      </span>
+                      <span className="text-gold">{row.value}</span>
+                    </div>
+                  ))}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </SectionShell>
       )}
 
       {/* SKILLS */}
       {sectionHasContent.skills && (
-        <SectionShell id="skills" title="Skills & Info" tone="white">
-          <div className="flex flex-wrap gap-2.5">
+        <SectionShell id="skills" title="Skills & Info" tone="surface">
+          <div className="grid gap-x-10 gap-y-5 sm:grid-cols-2">
             {data.skills.map((s) => (
-              <span
-                key={s.id}
-                className="rounded-full border-[1.5px] border-plum/15 bg-cream px-4 py-2 text-sm font-semibold text-plum"
-              >
-                {s.name}
-              </span>
+              <div key={s.id}>
+                <div className="mb-1.5 flex items-baseline justify-between text-sm">
+                  <span className="font-semibold text-cream">{s.name}</span>
+                  <span className="text-cream/40">{s.level}%</span>
+                </div>
+                <div className="h-1.5 w-full overflow-hidden rounded-full bg-cream/10">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-gold to-gold-light"
+                    style={{ width: `${Math.min(100, Math.max(0, s.level))}%` }}
+                  />
+                </div>
+              </div>
             ))}
           </div>
         </SectionShell>
@@ -167,17 +182,17 @@ export default async function HomePage() {
 
       {/* EXPERIENCE + EDUCATION */}
       {(sectionHasContent.experience || sectionHasContent.education) && (
-        <SectionShell id="experience" title="Work Experience" tone="cream">
+        <SectionShell id="experience" title="Work Experience" tone="ink">
           <div className="space-y-4">
             {data.experience.map((e) => (
-              <div key={e.id} className="rounded-2xl bg-white p-6 shadow-[0_2px_10px_rgba(61,38,69,0.06)]">
+              <div key={e.id} className="rounded-2xl border border-cream/10 bg-surface p-6">
                 <div className="flex flex-wrap items-baseline justify-between gap-x-4">
-                  <strong className="text-base text-plum">{e.role}</strong>
+                  <strong className="text-base text-cream">{e.role}</strong>
                   <span className="text-xs text-slate">{e.dateRange}</span>
                 </div>
-                <div className="mt-0.5 text-[13.5px] text-ink/70 italic">{e.organization}</div>
+                <div className="mt-0.5 text-[13.5px] text-cream/60 italic">{e.organization}</div>
                 {e.description && (
-                  <p className="mt-3 text-sm whitespace-pre-line text-ink/80">{e.description}</p>
+                  <p className="mt-3 text-sm whitespace-pre-line text-cream/70">{e.description}</p>
                 )}
               </div>
             ))}
@@ -185,16 +200,16 @@ export default async function HomePage() {
 
           {sectionHasContent.education && (
             <>
-              <h3 className="mt-9 mb-3.5 font-serif text-xl font-normal text-plum">Education</h3>
-              <div className="divide-y divide-plum/10">
+              <h3 className="mt-9 mb-3.5 font-display text-xl font-bold text-cream">Education</h3>
+              <div className="divide-y divide-cream/10">
                 {data.education.map((e) => (
                   <div key={e.id} className="py-3">
                     <div className="flex flex-wrap items-baseline justify-between gap-x-4">
-                      <strong className="text-[14.5px] text-ink">{e.degree}</strong>
+                      <strong className="text-[14.5px] text-cream">{e.degree}</strong>
                       <span className="text-xs text-slate">{e.dateRange}</span>
                     </div>
                     {e.institution && (
-                      <div className="text-[13.5px] text-ink/70 italic">{e.institution}</div>
+                      <div className="text-[13.5px] text-cream/60 italic">{e.institution}</div>
                     )}
                     {e.result && <div className="mt-0.5 text-sm text-slate">{e.result}</div>}
                   </div>
@@ -212,11 +227,11 @@ export default async function HomePage() {
             {data.research.map((r) => (
               <div key={r.id}>
                 <div className="flex flex-wrap items-baseline justify-between gap-x-4">
-                  <strong className="text-ink">{r.title}</strong>
+                  <strong className="text-cream">{r.title}</strong>
                   <span className="text-xs text-slate">{r.dateRange}</span>
                 </div>
                 {r.description && (
-                  <p className="mt-1 text-sm whitespace-pre-line text-ink/80">{r.description}</p>
+                  <p className="mt-1 text-sm whitespace-pre-line text-cream/70">{r.description}</p>
                 )}
               </div>
             ))}
@@ -229,8 +244,8 @@ export default async function HomePage() {
         <CardSection id="publications" title="Publications">
           <ul className="space-y-3">
             {data.publications.map((p) => (
-              <li key={p.id} className="text-sm leading-relaxed text-ink/90">
-                <span className="font-medium text-ink">{p.title}.</span>{" "}
+              <li key={p.id} className="text-sm leading-relaxed text-cream/80">
+                <span className="font-medium text-cream">{p.title}.</span>{" "}
                 {[p.authors, p.venue, p.year].filter(Boolean).join(" — ")}
                 {p.doiOrLink && (
                   <>
@@ -239,7 +254,7 @@ export default async function HomePage() {
                       href={p.doiOrLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-coral underline"
+                      className="text-gold underline"
                     >
                       {p.doiOrLink}
                     </a>
@@ -258,12 +273,12 @@ export default async function HomePage() {
             {data.patents.map((p) => (
               <div key={p.id}>
                 <div className="flex flex-wrap items-baseline justify-between gap-x-4">
-                  <strong className="text-ink">{p.title}</strong>
+                  <strong className="text-cream">{p.title}</strong>
                   <span className="text-xs text-slate">{p.date}</span>
                 </div>
-                <div className="text-sm text-ink/70">{[p.number, p.status].filter(Boolean).join(" — ")}</div>
+                <div className="text-sm text-cream/60">{[p.number, p.status].filter(Boolean).join(" — ")}</div>
                 {p.description && (
-                  <p className="mt-1 text-sm whitespace-pre-line text-ink/80">{p.description}</p>
+                  <p className="mt-1 text-sm whitespace-pre-line text-cream/70">{p.description}</p>
                 )}
               </div>
             ))}
@@ -278,12 +293,12 @@ export default async function HomePage() {
             {data.awards.map((a) => (
               <div key={a.id}>
                 <div className="flex flex-wrap items-baseline justify-between gap-x-4">
-                  <strong className="text-ink">{a.title}</strong>
+                  <strong className="text-cream">{a.title}</strong>
                   <span className="text-xs text-slate">{a.year}</span>
                 </div>
-                {a.issuer && <div className="text-sm text-ink/70">{a.issuer}</div>}
+                {a.issuer && <div className="text-sm text-cream/60">{a.issuer}</div>}
                 {a.description && (
-                  <p className="mt-1 text-sm whitespace-pre-line text-ink/80">{a.description}</p>
+                  <p className="mt-1 text-sm whitespace-pre-line text-cream/70">{a.description}</p>
                 )}
               </div>
             ))}
@@ -298,12 +313,12 @@ export default async function HomePage() {
             {data.teaching.map((t) => (
               <div key={t.id}>
                 <div className="flex flex-wrap items-baseline justify-between gap-x-4">
-                  <strong className="text-ink">{t.title}</strong>
+                  <strong className="text-cream">{t.title}</strong>
                   <span className="text-xs text-slate">{t.dateRange}</span>
                 </div>
-                <div className="text-sm text-ink/70">{[t.role, t.institution].filter(Boolean).join(" — ")}</div>
+                <div className="text-sm text-cream/60">{[t.role, t.institution].filter(Boolean).join(" — ")}</div>
                 {t.description && (
-                  <p className="mt-1 text-sm whitespace-pre-line text-ink/80">{t.description}</p>
+                  <p className="mt-1 text-sm whitespace-pre-line text-cream/70">{t.description}</p>
                 )}
               </div>
             ))}
@@ -318,7 +333,7 @@ export default async function HomePage() {
             {data.languages.map((l) => (
               <span
                 key={l.id}
-                className="rounded-full border-[1.5px] border-plum/15 bg-cream px-4 py-1.5 text-sm font-medium text-plum"
+                className="rounded-full border border-gold/25 bg-gold/10 px-4 py-1.5 text-sm font-medium text-gold-light"
               >
                 {l.name}
                 {l.proficiency ? ` — ${l.proficiency}` : ""}
@@ -330,15 +345,15 @@ export default async function HomePage() {
 
       {/* COURSES */}
       {sectionHasContent.courses && (
-        <SectionShell id="courses" title="Courses & Certifications" tone="white">
+        <SectionShell id="courses" title="Courses & Certifications" tone="surface">
           <div className="space-y-6">
             {courseYears.map((year) => (
               <div key={year}>
                 <div className="mb-2 flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-coral" />
-                  <strong className="text-plum">Year — {year}</strong>
+                  <span className="h-2 w-2 rounded-full bg-gold" />
+                  <strong className="text-cream">Year — {year}</strong>
                 </div>
-                <ul className="list-disc space-y-1 pl-8 text-[13.5px] text-ink/85">
+                <ul className="list-disc space-y-1 pl-8 text-[13.5px] text-cream/70">
                   {coursesByYear[year].map((c) => (
                     <li key={c.id}>{[c.title, c.provider].filter(Boolean).join(" — ")}</li>
                   ))}
@@ -355,8 +370,8 @@ export default async function HomePage() {
           <div className="grid gap-4 sm:grid-cols-2">
             {data.references.map((r) => (
               <div key={r.id}>
-                <strong className="text-ink">{r.name}</strong>
-                <div className="text-sm text-ink/70">{[r.title, r.institution].filter(Boolean).join(" — ")}</div>
+                <strong className="text-cream">{r.name}</strong>
+                <div className="text-sm text-cream/60">{[r.title, r.institution].filter(Boolean).join(" — ")}</div>
                 <div className="mt-0.5 text-sm text-slate">{[r.email, r.phone].filter(Boolean).join("  |  ")}</div>
               </div>
             ))}
@@ -366,14 +381,14 @@ export default async function HomePage() {
 
       {/* CONTACT */}
       {sectionHasContent.contact && (
-        <section id="contact" className="mx-auto max-w-4xl px-6 pb-16">
-          <div className="flex flex-wrap gap-10 rounded-2xl bg-plum p-9 text-white">
+        <section id="contact" className="mx-auto max-w-4xl px-6 pb-20">
+          <div className="flex flex-wrap gap-10 rounded-2xl border border-gold/20 bg-surface p-9">
             <div className="min-w-[240px] flex-1">
-              <h3 className="mb-2.5 font-serif text-2xl font-normal">Get in Touch</h3>
-              <p className="mb-4 text-sm text-white/75">
+              <h3 className="mb-2.5 font-display text-2xl font-bold text-cream">Get in Touch</h3>
+              <p className="mb-4 text-sm text-cream/60">
                 Feel free to reach out about collaborations, opportunities, or research questions.
               </p>
-              <div className="space-y-2 text-[13.5px]">
+              <div className="space-y-2 text-[13.5px] text-cream/80">
                 {profile.phone && <div>{profile.phone}</div>}
                 {profile.email && <div>{profile.email}</div>}
                 {profile.location && <div>{profile.location}</div>}
@@ -400,7 +415,7 @@ export default async function HomePage() {
         </a>
       )}
 
-      <footer className="bg-cream py-8 text-center text-xs text-slate">
+      <footer className="bg-ink py-8 text-center text-xs text-slate">
         © {new Date().getFullYear()} {profile.name || "Portfolio"}
       </footer>
     </div>

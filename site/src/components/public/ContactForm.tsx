@@ -42,7 +42,7 @@ export default function ContactForm() {
   }
 
   const inputClass =
-    "mb-2.5 w-full rounded-lg border-0 px-3.5 py-2.5 text-sm text-ink placeholder:text-slate focus:outline-none focus:ring-2 focus:ring-coral";
+    "mb-2.5 w-full rounded-lg border border-cream/15 bg-ink/40 px-3.5 py-2.5 text-sm text-cream placeholder:text-slate focus:outline-none focus:ring-2 focus:ring-gold";
 
   return (
     <form onSubmit={handleSubmit}>
@@ -73,7 +73,7 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={loading}
-        className="rounded-lg bg-coral px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+        className="rounded-lg bg-gold px-5 py-2.5 text-sm font-semibold text-ink transition-opacity hover:opacity-90 disabled:opacity-50"
       >
         {loading ? "Sending…" : "Send Message"}
       </button>
