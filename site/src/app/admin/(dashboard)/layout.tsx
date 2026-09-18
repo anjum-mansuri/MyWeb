@@ -15,6 +15,12 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
             <Link href="/admin/leads" className="hover:text-slate-900">
               Inquiries
             </Link>
+            <Link href="/admin/documents" className="hover:text-slate-900">
+              Documents
+            </Link>
+            <Link href="/admin/ask" className="hover:text-slate-900">
+              Ask
+            </Link>
             <Link href="/admin/settings" className="hover:text-slate-900">
               Settings
             </Link>
