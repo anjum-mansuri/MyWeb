@@ -12,6 +12,19 @@ generates a PDF live from whatever is currently marked public.
 - Single-admin password login (session cookie signed with `jose`)
 - `@react-pdf/renderer` for server-generated CVs
 
+## 0. Cloning this repo on a new computer
+
+```
+git clone https://github.com/anjum-mansuri/MyWeb.git
+cd MyWeb/site
+```
+
+Everything the app needs — code, database schema, migrations — is in this repo. The only things
+*not* in the repo (by design, since they're secrets) are the three environment variables in
+section 1 below. Once you've set those in a `.env.local` file, `npm install && npm run dev`
+(section 2) gets you running locally, pointed at the exact same live database as any other
+machine — so content is instantly shared, nothing to export/import.
+
 ## 1. One-time setup: create your database
 
 1. Go to [neon.tech](https://neon.tech) and create a free account/project. No credit card required.
@@ -27,6 +40,13 @@ generates a PDF live from whatever is currently marked public.
    ```
    node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
    ```
+7. (Optional) Set `ANTHROPIC_API_KEY` to enable the `/admin/ask` AI assistant — get one at
+   [console.anthropic.com](https://console.anthropic.com) under API Keys. Leave it blank to skip
+   this feature entirely; everything else works fine without it.
+
+> **Already have a working `.env.local` on another machine?** Just copy that file over instead
+> of repeating steps 1–7 — it already has the real values, and reusing the same `DATABASE_URL`
+> means both machines see the same content.
 
 ## 2. Local development
 
@@ -82,6 +102,11 @@ controls admin access.
 - `/admin/settings` turns the **visitor gate** on or off (a name/email/reason form visitors must
   fill out before seeing the site).
 - `/admin/leads` lists everyone who has submitted the visitor gate or the on-page contact form.
+- `/admin/documents` is a private file library — upload PDFs, photos, or any document. PDFs have
+  their text extracted automatically so they can be used as context for the next feature.
+- `/admin/ask` is a private AI assistant (type a question and/or attach a photo) that answers
+  using your profile data and anything in the document library. Requires `ANTHROPIC_API_KEY` to
+  be set (see section 1, step 7) — without it, the page shows a clear error instead of crashing.
 
 ## 6. CV generation
 
