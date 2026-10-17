@@ -67,13 +67,24 @@ with the `ADMIN_PASSWORD` you set.
    Set the project root to `site/` if prompted.
 3. In the Vercel project's **Settings → Environment Variables**, add the same three variables
    from your `.env.local`: `DATABASE_URL`, `ADMIN_PASSWORD`, `SESSION_SECRET`.
-4. Deploy. On the first deploy, run the migration once against your Neon database (from your
-   local machine, pointed at the same `DATABASE_URL` you gave Vercel):
+4. Also add `PRISMA_SCHEMA_DISABLE_ADVISORY_LOCK` = `1`. The build script
+   (`prisma generate && prisma migrate deploy && next build`) applies any pending migrations on
+   every deploy, and Neon's pooled connection times out on the lock Prisma takes by default.
+5. Deploy. On the very first deploy, also seed the default rows once:
    ```
-   npm run db:deploy
    npm run db:seed
    ```
-5. (Optional) Add a custom domain under **Settings → Domains**.
+6. (Optional) Add a custom domain under **Settings → Domains**.
+
+You can also deploy straight from your machine with the Vercel CLI, from `site/`:
+```
+vercel deploy --prod --yes
+```
+
+> **Schema changes:** add a migration under `prisma/migrations/` (for example with
+> `npx prisma migrate diff --from-schema-datamodel <old schema> --to-schema-datamodel prisma/schema.prisma --script`)
+> and deploy. The Vercel build applies it, so you don't need direct database access from your
+> machine (some networks block Postgres port 5432).
 
 Because Vercel and your local machine both use the same Neon `DATABASE_URL`, content you add
 in the deployed `/admin` shows up immediately everywhere — there's nothing to keep in sync.
@@ -93,10 +104,20 @@ controls admin access.
 ## 5. How content maps to the admin panel
 
 - **Hero, About Me, Contact** are edited together on `/admin/profile` (name, title, tagline,
-  photo, bio, links, email/phone/location).
+  photo, bio, email, alternate email, phone, location, and profile links: LinkedIn, Google
+  Scholar, ORCID, GitHub, ResearchGate, Shodhganga thesis). Each link that's filled in shows as
+  an icon in the hero and a row in the About details.
 - Every other section (Education, Experience, Research, Publications, Patents, Awards, Skills,
   Teaching, Courses, Languages, References) is a list you manage from `/admin/section/<name>` —
   add, edit, delete, and reorder entries with the up/down arrows.
+- **Courses & Certifications** entries can each have a certificate (PDF, PNG, JPG, or WebP, up
+  to 3MB, uploaded from the course row) and a "Skills learned" note. Both are shown directly
+  under the course on the public site. Certificates are served from `/api/certificates/<courseId>`
+  only while the Courses section is public.
+- **Skills** are grouped into one card per category on the public site. The admin stores
+  proficiency as 0–100, but visitors see a level instead of a percentage: 80+ is Expert, 60–79
+  is Proficient, and below 60 is Working knowledge.
+- Any web address typed into an Education entry's result text becomes a clickable link.
 - The dashboard at `/admin` toggles each section **Public**/**Private** independently. Patents
   and References default to Private; everything else defaults to Public.
 - `/admin/settings` turns the **visitor gate** on or off (a name/email/reason form visitors must
