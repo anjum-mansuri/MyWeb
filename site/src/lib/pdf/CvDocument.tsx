@@ -46,7 +46,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 export function CvDocument({ data }: { data: PublicData }) {
   const { profile } = data;
   const hasContact =
-    data.isContactPublic && (profile.email || profile.phone || profile.location);
+    data.isContactPublic && (profile.email || profile.altEmail || profile.phone || profile.location);
 
   return (
     <Document title={`${profile.name || "CV"} - CV`}>
@@ -61,7 +61,7 @@ export function CvDocument({ data }: { data: PublicData }) {
             {profile.title ? <Text style={styles.title}>{profile.title}</Text> : null}
             {hasContact ? (
               <Text style={styles.contactLine}>
-                {[profile.email, profile.phone, profile.location].filter(Boolean).join("  |  ")}
+                {[profile.email, profile.altEmail, profile.phone, profile.location].filter(Boolean).join("  |  ")}
               </Text>
             ) : null}
             {data.isHeroPublic ? (

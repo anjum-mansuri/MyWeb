@@ -36,7 +36,12 @@ export async function getPublicData() {
     isPublic("awards") ? prisma.award.findMany({ orderBy }) : [],
     isPublic("skills") ? prisma.skill.findMany({ orderBy }) : [],
     isPublic("teaching") ? prisma.teachingService.findMany({ orderBy }) : [],
-    isPublic("courses") ? prisma.course.findMany({ orderBy }) : [],
+    isPublic("courses")
+      ? prisma.course.findMany({
+          orderBy,
+          include: { certificate: { select: { id: true, filename: true, mimeType: true, sizeBytes: true } } },
+        })
+      : [],
     isPublic("languages") ? prisma.language.findMany({ orderBy }) : [],
     isPublic("references") ? prisma.reference.findMany({ orderBy }) : [],
   ]);

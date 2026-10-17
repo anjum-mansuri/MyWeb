@@ -151,7 +151,7 @@ export const ITEM_TYPES = {
     fields: [
       { key: "name", label: "Skill", type: "text" },
       { key: "category", label: "Category", type: "text", placeholder: "optional" },
-      { key: "level", label: "Proficiency (0-100)", type: "number", placeholder: "75" },
+      { key: "level", label: "Proficiency (80+ Expert, 60-79 Proficient, <60 Working knowledge)", type: "number", placeholder: "75" },
     ],
     schema: z.object({
       name: z.string().min(1, "Skill name is required").max(100),
@@ -190,11 +190,13 @@ export const ITEM_TYPES = {
       { key: "title", label: "Title", type: "text" },
       { key: "provider", label: "Provider", type: "text" },
       { key: "year", label: "Year", type: "text" },
+      { key: "skillsLearned", label: "Skills learned", type: "textarea", placeholder: "e.g. Python, data analysis, ..." },
     ],
     schema: z.object({
       title: z.string().min(1, "Title is required").max(300),
       provider: optionalStr,
       year: optionalStr,
+      skillsLearned: optionalStr,
     }),
   },
   languages: {

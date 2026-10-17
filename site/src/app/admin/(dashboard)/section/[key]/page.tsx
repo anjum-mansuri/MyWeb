@@ -16,7 +16,13 @@ export default async function SectionEditorPage({
 
   const config = itemTypeConfig(key);
   const delegate = (prisma as unknown as Record<string, PrismaDelegate>)[config.model as string];
-  const items = await delegate.findMany({ orderBy: { sortOrder: "asc" } });
+  const isCourses = key === "courses";
+  const items = isCourses
+    ? await prisma.course.findMany({
+        orderBy: { sortOrder: "asc" },
+        include: { certificate: { select: { id: true, filename: true, sizeBytes: true } } },
+      })
+    : await delegate.findMany({ orderBy: { sortOrder: "asc" } });
 
   return (
     <div>
@@ -31,6 +37,7 @@ export default async function SectionEditorPage({
           titleField={config.titleField}
           singular={config.singular}
           initialItems={items as never}
+          withCertificates={isCourses}
         />
       </div>
     </div>

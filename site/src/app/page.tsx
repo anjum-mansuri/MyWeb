@@ -1,5 +1,4 @@
 import { cookies } from "next/headers";
-import type { Course } from "@prisma/client";
 import { getPublicData } from "@/lib/publicData";
 import { SECTIONS } from "@/lib/sections";
 import Nav from "@/components/public/Nav";
@@ -10,6 +9,30 @@ import WaveformRibbon from "@/components/public/WaveformRibbon";
 import GlowBackdrop from "@/components/public/GlowBackdrop";
 
 export const dynamic = "force-dynamic";
+
+/** Renders plain text with any http(s) URLs turned into links. */
+function Linkified({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/(https?:\/\/[^\s]+)/g).map((part, i) =>
+        /^https?:\/\//.test(part) ? (
+          <a key={i} href={part} target="_blank" rel="noreferrer" className="text-gold underline hover:text-gold-light">
+            {part}
+          </a>
+        ) : (
+          part
+        ),
+      )}
+    </>
+  );
+}
+
+/** Skills are stored as 0-100 in the admin but shown publicly as three levels, not self-rated percentages. */
+function skillTier(level: number): { label: string; className: string } {
+  if (level >= 80) return { label: "Expert", className: "bg-gold/15 text-gold" };
+  if (level >= 60) return { label: "Proficient", className: "bg-cream/10 text-cream/80" };
+  return { label: "Working knowledge", className: "border border-cream/15 text-cream/55" };
+}
 
 export default async function HomePage() {
   const data = await getPublicData();
@@ -42,7 +65,7 @@ export default async function HomePage() {
     (s) => s.key !== "hero" && sectionHasContent[s.key],
   ).map((s) => ({ key: s.key, label: s.navLabel }));
 
-  const coursesByYear: Record<string, Course[]> = {};
+  const coursesByYear: Record<string, (typeof data.courses)[number][]> = {};
   for (const c of data.courses) {
     const year = c.year || "Undated";
     if (!coursesByYear[year]) coursesByYear[year] = [];
@@ -50,17 +73,33 @@ export default async function HomePage() {
   }
   const courseYears = Object.keys(coursesByYear).sort();
 
+  // Group skills by category in admin sort order; uncategorized skills go last under "Other"
+  const skillGroups: { category: string; skills: (typeof data.skills)[number][] }[] = [];
+  for (const s of data.skills) {
+    const category = s.category.trim() || "Other";
+    let group = skillGroups.find((g) => g.category === category);
+    if (!group) {
+      group = { category, skills: [] };
+      skillGroups.push(group);
+    }
+    group.skills.push(s);
+  }
+  skillGroups.sort((a, b) => Number(a.category === "Other") - Number(b.category === "Other"));
+  const hasSkillCategories = data.skills.some((s) => s.category.trim());
+
   const whatsappNumber = profile.phone ? profile.phone.replace(/[^0-9]/g, "") : null;
 
   const infoRows: { label: string; value: string }[] = [];
   if (sectionHasContent.contact && profile.location) infoRows.push({ label: "Location", value: profile.location });
   if (sectionHasContent.contact && profile.email) infoRows.push({ label: "Email", value: profile.email });
+  if (sectionHasContent.contact && profile.altEmail) infoRows.push({ label: "Alt. email", value: profile.altEmail });
   if (sectionHasContent.contact && profile.phone) infoRows.push({ label: "Phone", value: profile.phone });
   if (profile.linkedinUrl) infoRows.push({ label: "LinkedIn", value: profile.linkedinUrl });
   if (profile.githubUrl) infoRows.push({ label: "GitHub", value: profile.githubUrl });
   if (profile.scholarUrl) infoRows.push({ label: "Scholar", value: profile.scholarUrl });
   if (profile.orcidUrl) infoRows.push({ label: "ORCID", value: profile.orcidUrl });
   if (profile.researchGateUrl) infoRows.push({ label: "ResearchGate", value: profile.researchGateUrl });
+  if (profile.shodhgangaUrl) infoRows.push({ label: "Shodhganga", value: profile.shodhgangaUrl });
 
   return (
     <div id="top">
@@ -151,6 +190,18 @@ export default async function HomePage() {
                 RG
               </a>
             )}
+            {profile.shodhgangaUrl && (
+              <a
+                href={profile.shodhgangaUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-cream/20 text-[11px] font-bold text-cream hover:border-gold hover:text-gold"
+                aria-label="Shodhganga thesis"
+                title="Ph.D. thesis on Shodhganga"
+              >
+                SG
+              </a>
+            )}
             {profile.email && (
               <a
                 href={`mailto:${profile.email}`}
@@ -202,19 +253,38 @@ export default async function HomePage() {
       {/* SKILLS */}
       {sectionHasContent.skills && (
         <SectionShell id="skills" title="Skills & Info" tone="surface">
-          <div className="grid gap-x-10 gap-y-5 sm:grid-cols-2">
-            {data.skills.map((s) => (
-              <div key={s.id}>
-                <div className="mb-1.5 flex items-baseline justify-between text-sm">
-                  <span className="font-semibold text-cream">{s.name}</span>
-                  <span className="text-cream/40">{s.level}%</span>
-                </div>
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-cream/10">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-gold to-gold-light"
-                    style={{ width: `${Math.min(100, Math.max(0, s.level))}%` }}
-                  />
-                </div>
+          <div className="grid gap-6 md:grid-cols-2">
+            {skillGroups.map((group) => (
+              <div
+                key={group.category}
+                className="rounded-2xl border border-cream/10 bg-surface-2 p-6 transition-colors hover:border-gold/30"
+              >
+                {hasSkillCategories && (
+                  <div className="mb-6 flex items-center justify-between gap-3 border-b border-cream/10 pb-4">
+                    <h3 className="flex items-center gap-2.5 font-display text-lg font-bold text-cream">
+                      <span className="h-2 w-2 shrink-0 rounded-full bg-gold" />
+                      {group.category}
+                    </h3>
+                    <span className="shrink-0 rounded-full bg-gold/10 px-2.5 py-0.5 text-xs font-medium text-gold">
+                      {group.skills.length} {group.skills.length === 1 ? "skill" : "skills"}
+                    </span>
+                  </div>
+                )}
+                <ul className="space-y-4">
+                  {group.skills.map((s) => {
+                    const tier = skillTier(s.level);
+                    return (
+                      <li key={s.id} className="flex items-start justify-between gap-4 text-sm">
+                        <span className="leading-snug text-cream/90">{s.name}</span>
+                        <span
+                          className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${tier.className}`}
+                        >
+                          {tier.label}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
               </div>
             ))}
           </div>
@@ -252,7 +322,11 @@ export default async function HomePage() {
                     {e.institution && (
                       <div className="text-[13.5px] text-cream/60 italic">{e.institution}</div>
                     )}
-                    {e.result && <div className="mt-0.5 text-sm text-slate">{e.result}</div>}
+                    {e.result && (
+                      <div className="mt-0.5 text-sm text-slate">
+                        <Linkified text={e.result} />
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -396,7 +470,45 @@ export default async function HomePage() {
                 </div>
                 <ul className="list-disc space-y-1 pl-8 text-[13.5px] text-cream/70">
                   {coursesByYear[year].map((c) => (
-                    <li key={c.id}>{[c.title, c.provider].filter(Boolean).join(" — ")}</li>
+                    <li key={c.id}>
+                      {[c.title, c.provider].filter(Boolean).join(" — ")}
+                      {(c.certificate || c.skillsLearned) && (
+                        <div className="mt-2 max-w-2xl rounded-lg border border-cream/15 bg-white/5 px-4 py-3 text-cream/80">
+                          {c.skillsLearned && (
+                            <div>
+                              <p className="text-xs uppercase tracking-wide text-cream/50">Skills learned</p>
+                              <p className="mt-1 whitespace-pre-line text-sm">{c.skillsLearned}</p>
+                            </div>
+                          )}
+                          {c.certificate && (() => {
+                            // The query string changes when the file is replaced, so browsers never show a stale copy
+                            const src = `/api/certificates/${c.id}?v=${c.certificate.id}-${c.certificate.sizeBytes}`;
+                            return (
+                              <div className={c.skillsLearned ? "mt-3" : ""}>
+                                {c.certificate.mimeType.startsWith("image/") ? (
+                                  // eslint-disable-next-line @next/next/no-img-element
+                                  <img src={src} alt={`Certificate: ${c.title}`} className="w-full rounded-md" />
+                                ) : (
+                                  <iframe
+                                    src={`${src}#toolbar=0&view=FitH`}
+                                    title={`Certificate: ${c.title}`}
+                                    className="h-[28rem] w-full rounded-md bg-white"
+                                  />
+                                )}
+                                <a
+                                  href={src}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="mt-2 inline-block text-sm text-gold underline"
+                                >
+                                  Open certificate in a new tab
+                                </a>
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      )}
+                    </li>
                   ))}
                 </ul>
               </div>
@@ -432,6 +544,7 @@ export default async function HomePage() {
               <div className="space-y-2 text-[13.5px] text-cream/80">
                 {profile.phone && <div>{profile.phone}</div>}
                 {profile.email && <div>{profile.email}</div>}
+                {profile.altEmail && <div>{profile.altEmail}</div>}
                 {profile.location && <div>{profile.location}</div>}
               </div>
             </div>

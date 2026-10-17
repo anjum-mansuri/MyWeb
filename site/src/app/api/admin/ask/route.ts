@@ -56,7 +56,7 @@ export async function POST(request: Request) {
     .join("\n\n")
     .slice(0, 150_000);
 
-  const profileContext = `Name: ${profile.name}\nTitle: ${profile.title}\nBio: ${profile.bio}\nEmail: ${profile.email}\nPhone: ${profile.phone}\nLocation: ${profile.location}\nLinkedIn: ${profile.linkedinUrl}\nGitHub: ${profile.githubUrl}\nGoogle Scholar: ${profile.scholarUrl}\nORCID: ${profile.orcidUrl}\nResearchGate: ${profile.researchGateUrl}`;
+  const profileContext = `Name: ${profile.name}\nTitle: ${profile.title}\nBio: ${profile.bio}\nEmail: ${profile.email}\nAlternate email: ${profile.altEmail}\nPhone: ${profile.phone}\nLocation: ${profile.location}\nLinkedIn: ${profile.linkedinUrl}\nGitHub: ${profile.githubUrl}\nGoogle Scholar: ${profile.scholarUrl}\nORCID: ${profile.orcidUrl}\nResearchGate: ${profile.researchGateUrl}\nShodhganga thesis: ${profile.shodhgangaUrl}`;
 
   const systemPrompt = `You are a private personal assistant for ${profile.name || "the site owner"}, helping them recall their own academic/professional details and read their uploaded documents. Answer directly and concisely using the profile info and documents provided below. If asked about something not covered, say so plainly rather than guessing.\n\nPROFILE:\n${profileContext}\n\nUPLOADED DOCUMENTS:\n${docContext || "(none uploaded yet)"}`;
 

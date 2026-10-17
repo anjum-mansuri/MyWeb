@@ -11,6 +11,7 @@ type ProfileForm = {
   photoBase64: string | null;
   bio: string;
   email: string;
+  altEmail: string;
   phone: string;
   location: string;
   linkedinUrl: string;
@@ -18,6 +19,7 @@ type ProfileForm = {
   orcidUrl: string;
   githubUrl: string;
   researchGateUrl: string;
+  shodhgangaUrl: string;
 };
 
 const EMPTY: ProfileForm = {
@@ -27,6 +29,7 @@ const EMPTY: ProfileForm = {
   photoBase64: null,
   bio: "",
   email: "",
+  altEmail: "",
   phone: "",
   location: "",
   linkedinUrl: "",
@@ -34,6 +37,7 @@ const EMPTY: ProfileForm = {
   orcidUrl: "",
   githubUrl: "",
   researchGateUrl: "",
+  shodhgangaUrl: "",
 };
 
 function Field({
@@ -184,13 +188,19 @@ export default function ProfileEditorPage() {
               value={form.researchGateUrl}
               onChange={(v) => set("researchGateUrl", v)}
             />
+            <Field
+              label="Shodhganga thesis URL"
+              value={form.shodhgangaUrl}
+              onChange={(v) => set("shodhgangaUrl", v)}
+            />
           </div>
         </section>
 
         <section>
           <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Contact</h2>
-          <div className="mt-3 grid gap-4 sm:grid-cols-3">
+          <div className="mt-3 grid gap-4 sm:grid-cols-2">
             <Field label="Email" value={form.email} onChange={(v) => set("email", v)} />
+            <Field label="Alternate email" value={form.altEmail} onChange={(v) => set("altEmail", v)} />
             <Field label="Phone" value={form.phone} onChange={(v) => set("phone", v)} />
             <Field label="Location" value={form.location} onChange={(v) => set("location", v)} />
           </div>

@@ -38,6 +38,7 @@ model Profile {
   photoBase64     String?  @db.Text
   bio             String   @default("") @db.Text
   email           String   @default("")
+  altEmail        String   @default("")
   phone           String   @default("")
   location        String   @default("")
   linkedinUrl     String   @default("")
@@ -45,6 +46,7 @@ model Profile {
   orcidUrl        String   @default("")
   githubUrl       String   @default("")
   researchGateUrl String   @default("")
+  shodhgangaUrl   String   @default("")
   updatedAt       DateTime @updatedAt
 }
 
@@ -144,13 +146,26 @@ model TeachingService {
 }
 
 model Course {
-  id        String   @id @default(cuid())
-  title     String
-  provider  String   @default("")
-  year      String   @default("")
-  sortOrder Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String       @id @default(cuid())
+  title       String
+  provider    String       @default("")
+  year          String       @default("")
+  skillsLearned String       @default("") @db.Text
+  sortOrder     Int          @default(0)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  certificate   Certificate?
+}
+
+model Certificate {
+  id         String   @id @default(cuid())
+  courseId   String   @unique
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  filename   String
+  mimeType   String
+  dataBase64 String   @db.Text
+  sizeBytes  Int
+  createdAt  DateTime @default(now())
 }
 
 model Language {

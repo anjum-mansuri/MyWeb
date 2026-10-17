@@ -1,12 +1,109 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ChangeEvent } from "react";
 import type { FieldDef } from "@/lib/items";
+import { MAX_CERTIFICATE_BYTES } from "@/lib/certificates";
 
 type Item = Record<string, unknown> & { id: string; sortOrder: number };
 
+type CertificateMeta = { id: string; filename: string; sizeBytes: number };
+
 function emptyForm(fields: FieldDef[]): Record<string, string> {
   return Object.fromEntries(fields.map((f) => [f.key, ""]));
+}
+
+function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(new Error("Could not read file."));
+    reader.readAsDataURL(file);
+  });
+}
+
+function CertificateControl({
+  courseId,
+  certificate,
+  onChange,
+}: {
+  courseId: string;
+  certificate: CertificateMeta | null;
+  onChange: (certificate: CertificateMeta | null) => void;
+}) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleUpload(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setError(null);
+    if (file.size > MAX_CERTIFICATE_BYTES) {
+      setError("File is too large (max 3MB). Try a compressed PDF or a smaller image.");
+      return;
+    }
+    setBusy(true);
+    try {
+      const dataBase64 = await fileToDataUrl(file);
+      const res = await fetch(`/api/admin/certificates/${courseId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ filename: file.name, mimeType: file.type, dataBase64 }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(data.error ?? `Upload failed (error ${res.status}).`);
+        return;
+      }
+      onChange(data.certificate);
+    } catch {
+      setError("Upload failed.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleRemove() {
+    if (!confirm("Remove this certificate?")) return;
+    setBusy(true);
+    try {
+      const res = await fetch(`/api/admin/certificates/${courseId}`, { method: "DELETE" });
+      if (res.ok) onChange(null);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+      {certificate ? (
+        <>
+          <span className="truncate">Certificate: {certificate.filename}</span>
+          <a
+            href={`/api/certificates/${courseId}`}
+            target="_blank"
+            rel="noreferrer"
+            className="font-medium text-slate-700 underline"
+          >
+            View
+          </a>
+          <label className="cursor-pointer font-medium text-slate-700 underline">
+            Replace
+            <input type="file" accept=".pdf,.png,.jpg,.jpeg,.webp" className="hidden" onChange={handleUpload} disabled={busy} />
+          </label>
+          <button onClick={handleRemove} disabled={busy} className="font-medium text-red-600 underline">
+            Remove
+          </button>
+        </>
+      ) : (
+        <label className="cursor-pointer font-medium text-slate-700 underline">
+          {busy ? "Uploading…" : "+ Upload certificate (PDF or image)"}
+          <input type="file" accept=".pdf,.png,.jpg,.jpeg,.webp" className="hidden" onChange={handleUpload} disabled={busy} />
+        </label>
+      )}
+      {error && <span className="text-red-600">{error}</span>}
+    </div>
+  );
 }
 
 function ItemForm({
@@ -52,12 +149,14 @@ export default function ListEditor({
   titleField,
   singular,
   initialItems,
+  withCertificates = false,
 }: {
   type: string;
   fields: FieldDef[];
   titleField: string;
   singular: string;
   initialItems: Item[];
+  withCertificates?: boolean;
 }) {
   const [items, setItems] = useState<Item[]>(initialItems);
   const [adding, setAdding] = useState(false);
@@ -108,7 +207,8 @@ export default function ListEditor({
         setError(data.error ?? "Could not save.");
         return;
       }
-      setItems((prev) => prev.map((it) => (it.id === id ? data.item : it)));
+      // The items API doesn't return the certificate, so keep the one we already have
+      setItems((prev) => prev.map((it) => (it.id === id ? { ...data.item, certificate: it.certificate } : it)));
       setEditingId(null);
     } finally {
       setBusy(false);
@@ -195,6 +295,15 @@ export default function ListEditor({
                 <p className="truncate font-medium text-slate-900">
                   {String(item[titleField] ?? "(untitled)")}
                 </p>
+                {withCertificates && (
+                  <CertificateControl
+                    courseId={item.id}
+                    certificate={(item.certificate as CertificateMeta | null) ?? null}
+                    onChange={(certificate) =>
+                      setItems((prev) => prev.map((it) => (it.id === item.id ? { ...it, certificate } : it)))
+                    }
+                  />
+                )}
               </div>
               <div className="flex shrink-0 items-center gap-1">
                 <button
