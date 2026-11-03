@@ -7,6 +7,7 @@ import VisitorGate from "@/components/public/VisitorGate";
 import ContactForm from "@/components/public/ContactForm";
 import WaveformRibbon from "@/components/public/WaveformRibbon";
 import GlowBackdrop from "@/components/public/GlowBackdrop";
+import GuidedProjects, { getGuidedProjects } from "@/components/public/GuidedProjects";
 
 export const dynamic = "force-dynamic";
 
@@ -44,6 +45,7 @@ export default async function HomePage() {
   }
 
   const { profile } = data;
+  const guidedProjects = await getGuidedProjects();
 
   const sectionHasContent: Record<string, boolean> = {
     about: data.isAboutPublic && Boolean(profile.bio),
@@ -63,7 +65,11 @@ export default async function HomePage() {
 
   const navItems = SECTIONS.filter(
     (s) => s.key !== "hero" && sectionHasContent[s.key],
-  ).map((s) => ({ key: s.key, label: s.navLabel }));
+  ).map((s) => ({ key: s.key as string, label: s.navLabel }));
+  if (guidedProjects.length > 0) {
+    const at = navItems.findIndex((n) => n.key === "teaching");
+    navItems.splice(at >= 0 ? at + 1 : navItems.length, 0, { key: "guided", label: "Projects Guided" });
+  }
 
   const coursesByYear: Record<string, (typeof data.courses)[number][]> = {};
   for (const c of data.courses) {
@@ -440,6 +446,9 @@ export default async function HomePage() {
           </div>
         </CardSection>
       )}
+
+      {/* STUDENT PROJECTS GUIDED (synced daily from GitHub) */}
+      {guidedProjects.length > 0 && <GuidedProjects projects={guidedProjects} />}
 
       {/* LANGUAGES */}
       {sectionHasContent.languages && (
